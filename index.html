@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050a14"><meta name="description" content="Helios Arena V10: PlayCanvas split-screen tactical warfare, weapon pickups, 3 signature superweapons, realistic cosmic panoramas and Oort field containment.">
+<title>HELIOS ARENA V10 — COSMIC WARFARE</title>
+
+<link rel="stylesheet" href="style.css">
+</head><body>
+<canvas id="application" aria-label="PlayCanvas split-screen space battle"></canvas>
+<div class="vignette"></div>
+<div id="match-view" hidden>
+ <header class="match-top"><div class="match-logo">✧ <b>HELIOS</b> <span>ARENA</span></div><div class="match-center"><i class="live-light"></i> <span id="round-state">THE OORT FRONTIER</span> <small id="round-clock">00:00</small><span class="solar-counter" id="solar-counter">☼ SOLAR STABLE</span></div><div class="match-buttons"><button id="audio-toggle" title="Audio">♫ SOUND ON</button><button id="pause-btn" title="Pause game">Ⅱ PAUSE</button><button id="menu-btn" title="Return to menu">✕ EXIT</button></div></header>
+ <div class="split-divider" id="split-divider"><span>2 LOCAL PILOTS / ONE UNIVERSE</span></div>
+ <section class="player-hud top-hud" id="hud-p1">
+  <div class="player-heading"><span class="pilot-id">PILOT 01</span><strong id="p1-ship-name">VANGUARD</strong><span class="team-pill" id="p1-team">AZURE</span></div>
+  <div class="bars"><div class="bar"><span>HULL</span><div><i id="p1-hp" class="hp-fill"></i></div><b id="p1-hp-text">100</b></div><div class="bar"><span>SHIELD</span><div><i id="p1-shield" class="shield-fill"></i></div><b id="p1-shield-text">100</b></div></div>
+  <div class="pilot-readouts"><div><small>VELOCITY</small><strong id="p1-speed">0.0</strong></div><div><small>TARGET</small><strong id="p1-target">SCANNING</strong></div><div><small>PRIMARY</small><strong id="p1-primary">READY</strong></div><div><small>MISSILE</small><strong id="p1-missile">READY</strong></div><div><small>KILLS</small><strong id="p1-kills">00</strong></div><div><small>MISSILES</small><strong id="p1-ammo">24</strong></div><div><small>DECOYS</small><strong id="p1-flares">03</strong></div></div>
+  <div class="pilot-actions"><button id="p1-mode" title="Switch between ship and world targets">TARGET: ENEMIES [T]</button><button id="p1-next">NEXT TARGET [TAB]</button><select id="p1-system-nav" class="system-nav" title="Select a world or moon directly"><option value="">◈ WORLD NAV</option></select><button id="p1-zoom">⌕ ZOOM [Z]</button><button id="p1-view">◉ COCKPIT [V]</button><button id="p1-flare">◈ DECOY [G]</button><span id="p1-state">FLIGHT ACTIVE</span><span class="oort-readout" id="p1-oort-range">OORT: —</span></div>
+  <div class="combat-powerbar" id="p1-powerbar">
+    <button id="p1-pickup-btn" class="power-slot" title="Fire equipped collectible weapon"><small>COLLECTED WEAPON</small><strong id="p1-pickup">EMPTY</strong><em>1 / FIRE</em></button>
+    <button id="p1-special-btn" class="power-slot special-slot" title="Fire class special weapon"><small>SHIP SPECIAL</small><strong id="p1-special">READY</strong><em>2 / DEPLOY</em></button>
+    <span class="pickup-proximity" id="p1-cache-range">SCANNING FOR ORDNANCE CACHES</span>
+   </div><div id="p1-pickup-marker" class="pickup-marker" hidden>⬡ CACHE</div>
+  <div class="reticle reticle-p1"><i></i><b></b></div>
+  <div class="target-bracket" id="p1-bracket" hidden><div class="tracking-lock-tag" id="p1-tracking-lock">TRACKING</div><div class="target-tag" id="p1-bracket-name">ENEMY</div><div class="target-subdata" id="p1-bracket-data">SHIELDS / HULL</div><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span></div>
+  <div class="tracking-line" id="p1-tracking-line" hidden></div><div class="lead-pip" id="p1-lead" hidden><span>✧</span><small>LEAD</small></div>
+  <div class="edge-indicator" id="p1-edge" hidden>◇ TARGET</div>
+  <div class="lock-display" id="p1-lock-box"><div class="lock-circle" id="p1-lock-ring"><span id="p1-lock-percent">0%</span></div><div><b id="p1-lock-state">SEEKING TARGET</b><small id="p1-lock-range">ACQUIRE / HOLD RETICLE</small></div></div>
+  <div class="incoming-warning" id="p1-incoming" hidden>⚠ INCOMING MISSILE · DEPLOY DECOY!</div>
+  <div class="side-label left" id="p1-tip">WASD THRUST · MOUSE STEER · LEFT PULSE · RIGHT MISSILE · V COCKPIT · G DECOY</div>
+ </section>
+ <section class="player-hud bottom-hud" id="hud-p2">
+  <div class="player-heading"><span class="pilot-id">PILOT 02</span><strong id="p2-ship-name">SPECTRE</strong><span class="team-pill" id="p2-team">AZURE</span></div>
+  <div class="bars"><div class="bar"><span>HULL</span><div><i id="p2-hp" class="hp-fill"></i></div><b id="p2-hp-text">100</b></div><div class="bar"><span>SHIELD</span><div><i id="p2-shield" class="shield-fill"></i></div><b id="p2-shield-text">100</b></div></div>
+  <div class="pilot-readouts"><div><small>VELOCITY</small><strong id="p2-speed">0.0</strong></div><div><small>TARGET</small><strong id="p2-target">SCANNING</strong></div><div><small>PRIMARY</small><strong id="p2-primary">READY</strong></div><div><small>MISSILE</small><strong id="p2-missile">READY</strong></div><div><small>KILLS</small><strong id="p2-kills">00</strong></div><div><small>MISSILES</small><strong id="p2-ammo">24</strong></div><div><small>DECOYS</small><strong id="p2-flares">03</strong></div></div>
+  <div class="pilot-actions"><button id="p2-mode">TARGET: ENEMIES [Y]</button><button id="p2-next">NEXT TARGET [ENTER]</button><select id="p2-system-nav" class="system-nav" title="Select a world or moon directly"><option value="">◈ WORLD NAV</option></select><button id="p2-zoom">⌕ ZOOM [H]</button><button id="p2-view">◉ COCKPIT [O]</button><button id="p2-flare">◈ DECOY [U]</button><span id="p2-state">FLIGHT ACTIVE</span><span class="oort-readout" id="p2-oort-range">OORT: —</span></div>
+  <div class="combat-powerbar" id="p2-powerbar">
+    <button id="p2-pickup-btn" class="power-slot" title="Fire equipped collectible weapon"><small>COLLECTED WEAPON</small><strong id="p2-pickup">EMPTY</strong><em>8 / FIRE</em></button>
+    <button id="p2-special-btn" class="power-slot special-slot" title="Fire class special weapon"><small>SHIP SPECIAL</small><strong id="p2-special">READY</strong><em>9 / DEPLOY</em></button>
+    <span class="pickup-proximity" id="p2-cache-range">SCANNING FOR ORDNANCE CACHES</span>
+   </div><div id="p2-pickup-marker" class="pickup-marker" hidden>⬡ CACHE</div>
+  <div class="reticle reticle-p2"><i></i><b></b></div>
+  <div class="target-bracket" id="p2-bracket" hidden><div class="tracking-lock-tag" id="p2-tracking-lock">TRACKING</div><div class="target-tag" id="p2-bracket-name">ENEMY</div><div class="target-subdata" id="p2-bracket-data">SHIELDS / HULL</div><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span></div>
+  <div class="tracking-line" id="p2-tracking-line" hidden></div><div class="lead-pip" id="p2-lead" hidden><span>✧</span><small>LEAD</small></div>
+  <div class="edge-indicator" id="p2-edge" hidden>◇ TARGET</div>
+  <div class="lock-display" id="p2-lock-box"><div class="lock-circle" id="p2-lock-ring"><span id="p2-lock-percent">0%</span></div><div><b id="p2-lock-state">SEEKING TARGET</b><small id="p2-lock-range">ACQUIRE / HOLD RETICLE</small></div></div>
+  <div class="incoming-warning" id="p2-incoming" hidden>⚠ INCOMING MISSILE · DEPLOY DECOY!</div><div class="side-label right" id="p2-tip">I/K THRUST · ARROWS STEER · N PULSE · M MISSILE · O COCKPIT · U DECOY</div>
+ </section>
+ <div class="killfeed" id="killfeed" aria-live="polite"></div>
+ <div class="solar-threat" id="solar-threat" hidden>☀ SOLAR-WIND FRONT · SEEK PLANET SHADOW</div><div class="event-banner" id="event-banner" hidden><span id="event-kicker">WORLD EVENT</span><strong id="event-title">PLANET SHATTERED</strong><small id="event-detail">Debris field forming</small></div>
+ <div class="bottom-score"><span id="score-living">4 SHIPS IN PLAY</span><span id="score-planets">0 WORLDS DESTROYED</span><span id="score-mode">2 VS 2 • LAST TEAM STANDING</span></div>
+</div>
+<div class="menu-screen" id="lobby">
+ <div class="menu-ambience"></div>
+ <div class="lobby-content">
+  <div class="masthead"><div class="microcopy"><span class="pulse-dot"></span> LOCAL MULTIPLAYER · PLAYCANVAS ENGINE</div><h1>HELIOS <em>ARENA</em><span class="heading-dot">.</span></h1><p class="lobby-lead">V10 / COSMIC WARFARE</p><p class="lobby-description">Two pilots, four ships, all eight planets, five dwarf planets and twenty-two featured moons. The Sun sends coronal shockwaves across the arena, while a mysterious invisible gravitational boundary prevents escape. Tiny ships. Gigantic worlds. Last team—or pilot—standing wins.</p></div>
+  <div class="setup-grid">
+   <section class="setup-card"><div class="card-head"><small>01 / ENGAGEMENT</small><h2>BATTLE FORMAT</h2></div><div class="toggle-choices" id="mode-choices"><button class="choice active" data-mode="teams"><b>2 vs 2</b><small>Co-op pilots versus two enemy bots</small></button><button class="choice" data-mode="ffa"><b>FREE FOR ALL</b><small>Four ships. No allies.</small></button></div><div class="toggle-choices compact" id="human-choices"><button class="choice active" data-humans="2">2 LOCAL PLAYERS</button><button class="choice" data-humans="1">SOLO + BOTS</button></div><div class="field-label">BATTLE MAP</div><div class="arena-map-label">☀ THE OORT FRONTIER <small>8 PLANETS / 5 DWARF WORLDS / 22 MOONS / 360° COSMIC PANORAMA</small></div><div class="field-label">AIM SUPPORT</div><select id="assist-choice"><option value="0.14">TACTICAL / BALANCED</option><option value="0.04">PRECISION / MINIMAL</option><option value="0.26">ARCADE / STRONGER</option></select><div class="field-label">RENDER QUALITY</div><select id="quality-choice"><option value="balanced">BALANCED / SPLIT-SCREEN RECOMMENDED</option><option value="high">ULTRA / MAX PARTICLES + DETAIL</option><option value="performance">PERFORMANCE / LOWER EFFECTS</option></select><div class="field-label">BOT DIFFICULTY</div><select id="bot-choice"><option value="standard">STANDARD — AGGRESSIVE</option><option value="rookie">ROOKIE — RELAXED</option><option value="veteran">VETERAN — DEADLY</option></select></section>
+   <section class="setup-card hangar"><div class="card-head"><small>02 / HANGAR BAY</small><h2>CHOOSE YOUR VESSELS</h2></div><div class="pilot-select"><div class="pilot-selector"><span>PILOT 01</span><select id="ship-p1"><option value="fighter">VANGUARD / ASSAULT</option><option value="interceptor">SPECTRE / INTERCEPTOR</option><option value="dreadnought">TITAN / DREADNOUGHT</option></select></div><div class="pilot-selector" id="pilot2-selector"><span>PILOT 02</span><select id="ship-p2"><option value="interceptor">SPECTRE / INTERCEPTOR</option><option value="fighter">VANGUARD / ASSAULT</option><option value="dreadnought">TITAN / DREADNOUGHT</option></select></div></div><div id="ship-class-panel" class="class-preview"><span class="ship-glyph">◈</span><div><strong id="class-title">VANGUARD</strong><small id="class-specs">BALANCED // DEADLY</small><p id="class-description">Balanced thrusters and reinforced armour. Twin pulse cannons and target-seeking missiles.</p></div></div><div class="stat-tracks"><div><span>THRUST</span><i id="stat-thrust"></i></div><div><span>ARMOUR</span><i id="stat-armour"></i></div><div><span>WEAPONS</span><i id="stat-weapons"></i></div></div></section>
+   <section class="setup-card briefing"><div class="card-head"><small>03 / MISSION INTEL</small><h2>THE RULES OF SPACE</h2></div><div class="briefing-list"><div><b>✦ TWO WEAPON SYSTEMS</b><span>Plasma cannons, rapid 70-second heat-seeking missiles, rare weapon caches and three ship-class superweapons.</span></div><div><b>◎ COLLISIONS & MOMENTUM</b><span>Weighty acceleration, finite braking, angular inertia, collisions and evasive manoeuvres.</span></div><div><b>✶ SHATTER THE FRONTIER</b><span>Shatter worlds into hazardous rubble. The Sun fires solar-wind fronts, and the distant Oort force field pulls ships back inside the arena.</span></div><div><b>◇ LAST SHIP STANDING</b><span>Collect railguns, scatter cannons, EMP charges, ammo and repairs. Use class-specific specials to survive.</span></div></div></section>
+  </div>
+  <div class="launch-row"><button id="launch-btn">▶ LAUNCH SKIRMISH <span>ENGAGE</span></button><span id="engine-status">INITIALIZING 3D ENGINE…</span></div>
+<section id="boot-report" hidden role="alert">
+ <strong>3D ENGINE STARTUP ERROR</strong>
+ <p id="boot-guidance">The game can report whether the failure is in loading PlayCanvas, creating WebGL, or building the 3D scene. The detailed error is shown below.</p>
+ <details id="boot-details" open><summary>Technical error details</summary><pre id="boot-diagnostic"></pre></details>
+ <button id="retry-btn" type="button">↻ RETRY ENGINE</button>
+</section>
+  <div class="menu-foot">COSMIC WARFARE / SOLAR CONFLICT · PLAYCANVAS ENGINE 2.23.3 · GITHUB PAGES</div>
+ </div>
+</div>
+<div class="overlay" id="pause-screen" hidden><div class="overlay-card"><div class="overline">ATHENA COMBAT COMMAND</div><h2>GAME PAUSED</h2><p>Weapons cold. Flight controls suspended.</p><button id="resume-btn">▶ RETURN TO BATTLE</button><button id="pause-menu-btn" class="secondary-btn">✕ END ENGAGEMENT</button></div></div>
+<div class="overlay" id="result-screen" hidden><div class="overlay-card"><div class="overline">MATCH COMPLETE / FINAL TRANSMISSION</div><h2 id="result-title">TEAM AZURE WINS</h2><p id="result-subtitle">Last team standing.</p><div class="result-grid" id="result-stats"></div><button id="rematch-btn">↻ RETURN TO HANGAR</button></div></div>
+<div id="boot-error" hidden></div>
+
+<script type="module" src="src/boot.js"></script>
+</body></html>
